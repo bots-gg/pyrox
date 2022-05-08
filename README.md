@@ -1,10 +1,10 @@
 ## pyrox
 
-Proxy that runs on [CloudFlare Workers](https://workers.dev).
+Proxy that runs on [Cloudflare Workers](https://workers.dev).
 
 #### Setup
 
-1. Install wrangler2 (atm in beta). `npm install wrangler@beta`.
+1. Install wrangler2. `npm install wrangler`.
 2. Generate a public Ed25519 key, exported under SPKI mode with PEM formatting. Should look like this:
 
 ```
