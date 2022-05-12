@@ -1,6 +1,7 @@
 name = "pyrox"
 main = "src/index.ts"
+workers_dev = false
 compatibility_date = "2022-05-07"
 
 # example for dbots prod
-#routes = ["discord.bots.gg/api/v1/proxy"]
+#routes = ["discord.bots.gg/api/v1/proxy*"]
