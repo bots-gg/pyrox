@@ -26,6 +26,11 @@ const parseB64 = (b64: string) => {
 
 export default {
   async fetch(request: Request, { PUBLIC_KEY }: { PUBLIC_KEY: string }): Promise<Response> {
+    const userAgent = request.headers.get('User-Agent');
+    if (!userAgent) {
+      return new Response("Expected a `User-Agent` header.", { status: 403 });
+    }
+
     const url = new URL(request.url);
     const subUrl = url.searchParams.get("url");
     if (!subUrl) {
@@ -62,6 +67,6 @@ export default {
 
     const requestedUrl = new URL(subUrl, url.origin);
 
-    return fetch(requestedUrl.toString());
+    return fetch(requestedUrl.toString(), { headers: new Headers({ 'User-Agent': userAgent }) });
   }
 };
