@@ -67,6 +67,9 @@ export default {
 
     const requestedUrl = new URL(subUrl, url.origin);
 
-    return fetch(requestedUrl.toString(), { headers: new Headers({ 'User-Agent': userAgent }) });
+    const resp = await fetch(requestedUrl.toString(), { headers: new Headers({ 'User-Agent': userAgent }) });
+    const newResp = new Response(resp.body, resp);  // ??
+    newResp.headers.set("Content-Security-Policy", "default-src: 'self';")
+    return newResp;
   }
 };
