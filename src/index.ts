@@ -1,3 +1,5 @@
+import { escapeCSS } from "@bots-gg/markup";
+
 const parseHex = (hex: string) => {
   const buf = new ArrayBuffer(hex.length / 2);
   const bufView = new Uint8Array(buf);
@@ -23,6 +25,11 @@ const parseB64 = (b64: string) => {
 
   return buf;
 }
+
+const getMimeType = (contentType: string | undefined) =>
+  contentType?.includes(";")
+  ? contentType.split(";")[0].trim()
+  : contentType?.trim();
 
 export default {
   async fetch(request: Request, { PUBLIC_KEY }: { PUBLIC_KEY: string }): Promise<Response> {
@@ -68,8 +75,42 @@ export default {
     const requestedUrl = new URL(subUrl, url.origin);
 
     const resp = await fetch(requestedUrl.toString(), { headers: new Headers({ 'User-Agent': userAgent }) });
-    const newResp = new Response(resp.body, resp);  // ??
-    newResp.headers.set("Content-Security-Policy", "default-src: 'self';")
+
+    let body: Response['body'] | string = resp.body;
+    console.log({"content-type": resp.headers.get("Content-Type")?.toLowerCase()});
+    if (getMimeType(resp.headers.get("Content-Type")?.toLowerCase()) === "text/css") {
+      // this sucks...
+      const text = await resp.text();
+      const urls: string[] = [];
+      escapeCSS(text, (url: string) => {
+        urls.push(url);
+        return url;
+      });
+
+      let giveUp = false;
+      const responses = await Promise.all(urls.map(async (url) => {
+        const otherResp = await fetch((new URL(url, request.url)));
+        const mimeType = getMimeType(otherResp.headers.get("Content-Type")?.toLowerCase());
+        if (mimeType === "text/css") {
+          giveUp = true;
+        }
+        // *smug smirk*
+        return `data:${mimeType};base64,${btoa(await otherResp.text())}`;
+      }));
+
+      if (giveUp) {
+        return new Response("You suck.");
+      }
+
+      const urlMap = Object.fromEntries(urls.map((url, i) => [url, i]));
+
+      body = escapeCSS(text, (url: string) => responses[urlMap[url]]);
+    }
+
+    const newResp = new Response(body, resp);  // :(
+    newResp.headers.set("Content-Security-Policy", "default-src: 'self';");
+    newResp.headers.set("X-Content-Type-Options", "nosniff");
+
     return newResp;
   }
 };

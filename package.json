@@ -1,0 +1,21 @@
+{
+  "name": "pyrox",
+  "version": "1.0.0",
+  "description": "Proxy that runs on [Cloudflare Workers](https://workers.dev).",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bots-gg/pyrox.git"
+  },
+  "author": "A5rocks",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bots-gg/pyrox/issues"
+  },
+  "homepage": "https://github.com/bots-gg/pyrox#readme",
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20230511.0"
+  },
+  "dependencies": {
+    "@bots-gg/markup": "^1.3.1"
+  }
+}
