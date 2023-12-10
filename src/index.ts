@@ -77,7 +77,6 @@ export default {
     const resp = await fetch(requestedUrl.toString(), { headers: new Headers({ 'User-Agent': userAgent }) });
 
     let body: Response['body'] | string = resp.body;
-    console.log({"content-type": resp.headers.get("Content-Type")?.toLowerCase()});
     if (getMimeType(resp.headers.get("Content-Type")?.toLowerCase()) === "text/css") {
       // this sucks...
       const text = await resp.text();
